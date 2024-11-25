@@ -16,23 +16,30 @@ public class PlayerController : MonoBehaviour
     public float jump_force;
 
     bool isGameStarted = false;
+    bool isGameOver = false;
+
+
+    [SerializeField] Animator playerAnimator;
 
     // Start is called before the first frame update
     void Start()
     {
         isGameStarted = false;
+        isGameOver = false;
         current_pos = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(!isGameStarted)
+        if(!isGameStarted || !isGameOver)
         {
             if (Input.GetMouseButtonDown(0))
             {
                 Debug.Log("Game is started");
                 isGameStarted = true;
+                playerAnimator.SetInteger("isRunning", 1);
+                playerAnimator.speed = 1.3f;
             }
         }
 
@@ -94,7 +101,26 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 rb.velocity = Vector3.up * jump_force;
+                StartCoroutine(Jump());
             }
+        }
+    }
+
+    IEnumerator Jump()
+    {
+        playerAnimator.SetInteger("isJumping", 1);
+        yield return new WaitForSeconds(0.1f);
+        playerAnimator.SetInteger("isJumping", 0);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "object")
+        {
+            isGameStarted = false;
+            isGameOver = true;
+            playerAnimator.applyRootMotion = true;
+            playerAnimator.SetInteger("isDead", 1);
         }
     }
 }
