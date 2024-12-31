@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour
                     current_pos = 0;
                 }
             }
-//#elif UNITY_ANDROID
+#elif UNITY_ANDROID
 
             if (Input.touchCount == 1) // user is touching the screen with a single touch
             {
