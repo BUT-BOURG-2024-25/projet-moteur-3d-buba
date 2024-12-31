@@ -15,11 +15,12 @@ public class PlayerController : MonoBehaviour
     public float running_speed;
     public float jump_force;
 
-    bool isGameStarted = false;
-    bool isGameOver = false;
+    bool isGameStarted;
+    bool isGameOver;
 
 
     [SerializeField] Animator playerAnimator;
+    [SerializeField] GameObject GameOverPanel;
 
     // Start is called before the first frame update
     void Start()
@@ -102,6 +103,14 @@ public class PlayerController : MonoBehaviour
             {
                 rb.velocity = Vector3.up * jump_force;
                 StartCoroutine(Jump());
+            }
+        }
+
+        if (isGameOver)
+        {
+            if(!GameOverPanel.gameObject.activeSelf)
+            {
+                GameOverPanel.SetActive(true);
             }
         }
     }
