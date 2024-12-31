@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
 
     bool isGameStarted;
     bool isGameOver;
-    bool isGrounded = true;
 
     [SerializeField] Animator playerAnimator;
     [SerializeField] GameObject GameOverPanel;
@@ -101,10 +100,9 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 rb.velocity = Vector3.up * jump_force;
-                isGrounded = false;
                 StartCoroutine(Jump());
             }
 
@@ -128,25 +126,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Ground")
-        {
-            isGrounded = true;
-        }
-
         if (collision.gameObject.tag == "object")
         {
             isGameStarted = false;
             isGameOver = true;
             playerAnimator.applyRootMotion = true;
             playerAnimator.SetInteger("isDead", 1);
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.tag == "Ground")
-        {
-            isGrounded = false;
         }
     }
 }
