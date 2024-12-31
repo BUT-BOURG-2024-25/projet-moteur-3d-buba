@@ -17,10 +17,11 @@ public class PlayerController : MonoBehaviour
 
     bool isGameStarted;
     bool isGameOver;
-
+    bool isGrounded = true;
 
     [SerializeField] Animator playerAnimator;
     [SerializeField] GameObject GameOverPanel;
+    [SerializeField] GameObject TapToStart;
 
     // Start is called before the first frame update
     void Start()
@@ -41,6 +42,7 @@ public class PlayerController : MonoBehaviour
                 isGameStarted = true;
                 playerAnimator.SetInteger("isRunning", 1);
                 playerAnimator.speed = 1.3f;
+                TapToStart.SetActive(false);
             }
         }
 
@@ -99,11 +101,13 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
             {
                 rb.velocity = Vector3.up * jump_force;
+                isGrounded = false;
                 StartCoroutine(Jump());
             }
+
         }
 
         if (isGameOver)
@@ -124,12 +128,25 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.tag == "Ground")
+        {
+            isGrounded = true;
+        }
+
         if (collision.gameObject.tag == "object")
         {
             isGameStarted = false;
             isGameOver = true;
             playerAnimator.applyRootMotion = true;
             playerAnimator.SetInteger("isDead", 1);
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        {
+            isGrounded = false;
         }
     }
 }
