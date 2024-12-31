@@ -23,6 +23,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject GameOverPanel;
     [SerializeField] GameObject TapToStart;
 
+    [Header("Android Controls")]
+    private Vector3 fp;
+    private Vector3 lp;
+    private float dragDistance;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,6 +35,7 @@ public class PlayerController : MonoBehaviour
         isGameOver = false;
         isJumping = false;
         current_pos = 0;
+        dragDistance = Screen.height * 15 / 100;
     }
 
     // Update is called once per frame
@@ -50,6 +56,7 @@ public class PlayerController : MonoBehaviour
         if (isGameStarted) {
             transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z + running_speed * Time.deltaTime);
 
+#if UNITY_EDITOR
             if (current_pos == 0)
             {
                 if (Input.GetKeyDown(KeyCode.LeftArrow))
@@ -76,6 +83,79 @@ public class PlayerController : MonoBehaviour
                     current_pos = 0;
                 }
             }
+#elif UNITY_ANDROID
+
+            if (Input.touchCount == 1) // user is touching the screen with a single touch
+            {
+                Touch touch = Input.GetTouch(0); // get the touch
+                if (touch.phase == TouchPhase.Began) //check for the first touch
+                {
+                    fp = touch.position;
+                    lp = touch.position;
+                }
+                else if (touch.phase == TouchPhase.Moved) // update the last position based on where they moved
+                {
+                    lp = touch.position;
+                }
+                else if (touch.phase == TouchPhase.Ended) //check if the finger is removed from the screen
+                {
+                    lp = touch.position;  //last touch position. Ommitted if you use list
+
+                    //Check if drag distance is greater than 20% of the screen height
+                    if (Mathf.Abs(lp.x - fp.x) > dragDistance || Mathf.Abs(lp.y - fp.y) > dragDistance)
+                    {//It's a drag
+                     //check if the drag is vertical or horizontal
+                        if (Mathf.Abs(lp.x - fp.x) > Mathf.Abs(lp.y - fp.y))
+                        {   //If the horizontal movement is greater than the vertical movement...
+                            if ((lp.x > fp.x))  //If the movement was to the right)
+                            {   //Right swipe
+                                Debug.Log("Right Swipe");
+                                if (current_pos == 0)
+                                {
+                                    current_pos = 2;
+                                }
+                                else if (current_pos == 1)
+                                {
+                                    current_pos = 0;
+                                }
+                            }
+                            else
+                            {   //Left swipe
+                                Debug.Log("Left Swipe");
+                                if (current_pos == 0)
+                                {
+                                    current_pos = 1;
+                                }
+                                else if (current_pos == 2)
+                                {
+                                    current_pos = 0;
+                                }
+                            }
+                        }
+                        else
+                        {   //the vertical movement is greater than the horizontal movement
+                            if (lp.y > fp.y)  //If the movement was up
+                            {   //Up swipe
+                                Debug.Log("Up Swipe");
+                                if (!isJumping)
+                                {
+                                    Jump();
+                                }
+                            }
+                            else
+                            {   //Down swipe
+                                Debug.Log("Down Swipe");
+                            }
+                        }
+                    }
+                    else
+                    {   //It's a tap as the drag distance is less than 20% of the screen height
+                        Debug.Log("Tap");
+                    }
+                }
+            }
+#endif
+
 
             if (current_pos == 0)
             {
