@@ -139,7 +139,9 @@ public class PlayerController : MonoBehaviour
                                 Debug.Log("Up Swipe");
                                 if (!isJumping)
                                 {
-                                    Jump();
+                                    rb.velocity = Vector3.up * jump_force;
+                                    isJumping = true;
+                                    StartCoroutine(Jump());
                                 }
                             }
                             else
