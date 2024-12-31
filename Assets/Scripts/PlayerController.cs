@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
 
     bool isGameStarted;
     bool isGameOver;
+    bool isJumping;
 
     [SerializeField] Animator playerAnimator;
     [SerializeField] GameObject GameOverPanel;
@@ -27,6 +28,7 @@ public class PlayerController : MonoBehaviour
     {
         isGameStarted = false;
         isGameOver = false;
+        isJumping = false;
         current_pos = 0;
     }
 
@@ -100,9 +102,10 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) && !isJumping)
             {
                 rb.velocity = Vector3.up * jump_force;
+                isJumping = true;
                 StartCoroutine(Jump());
             }
 
@@ -126,6 +129,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.tag == "ground")
+        {
+            isJumping = false;
+        }
+
         if (collision.gameObject.tag == "object")
         {
             isGameStarted = false;
