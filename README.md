@@ -13,3 +13,4 @@ Fonctionnalités :
 - Score basé sur la distance parcourue et les éléments collectés.
 
 APK disponible dans le dossier apk.
+Vidéo également disponible via Youtube : https://youtube.com/shorts/0jfw-5Yi2-I
